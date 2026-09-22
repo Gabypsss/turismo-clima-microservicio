@@ -110,6 +110,7 @@ def obtener_recomendaciones():
     recomendaciones
     )       
 
+
     return {
         "ciudad": "Bogotá",
         "temperatura": clima_actual["temperature_2m"],
@@ -118,4 +119,23 @@ def obtener_recomendaciones():
         "alerta_seguridad": resultado_seguridad["alerta_seguridad"],
         "mensaje": resultado_seguridad["mensaje"],
         "recomendaciones": resultado_seguridad["recomendaciones"]
+    }
+@app.get("/prueba-seguridad")
+def prueba_seguridad(viento: float):
+    recomendaciones = [
+        "Caminata turística",
+        "Visitar un parque",
+        "Recorrido en bicicleta"
+    ]
+
+    resultado = aplicar_regla_seguridad(
+        viento,
+        recomendaciones
+    )
+
+    return {
+        "velocidad_viento": viento,
+        "alerta_seguridad": resultado["alerta_seguridad"],
+        "mensaje": resultado["mensaje"],
+        "recomendaciones": resultado["recomendaciones"]
     }
