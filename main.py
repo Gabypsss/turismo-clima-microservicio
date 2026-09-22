@@ -32,6 +32,8 @@ def obtener_clima():
         "codigo_clima": clima_actual["weather_code"],
         "velocidad_viento": clima_actual["wind_speed_10m"]
     }
+
+
 def recomendar_actividades(codigo_clima):
     if codigo_clima == 0:
         return [
@@ -53,6 +55,37 @@ def recomendar_actividades(codigo_clima):
             "Ir a un centro cultural",
             "Actividad gastronómica"
         ]
+
+
+def aplicar_regla_seguridad(viento, recomendaciones):
+    actividades_exteriores = [
+        "Caminata turística",
+        "Visitar un parque",
+        "Recorrido en bicicleta",
+        "Recorrido por la ciudad",
+        "Visitar un mirador"
+    ]
+
+    if viento > 50:
+        recomendaciones_seguras = [
+            actividad
+            for actividad in recomendaciones
+            if actividad not in actividades_exteriores
+        ]
+
+        return {
+            "alerta_seguridad": True,
+            "mensaje": "Alerta de seguridad: viento superior a 50 km/h. Se bloquearon las actividades al aire libre.",
+            "recomendaciones": recomendaciones_seguras
+        }
+
+    return {
+        "alerta_seguridad": False,
+        "mensaje": "Condiciones de viento dentro del rango permitido.",
+        "recomendaciones": recomendaciones
+    }
+
+
 @app.get("/recomendaciones")
 def obtener_recomendaciones():
     url = (
@@ -72,10 +105,17 @@ def obtener_recomendaciones():
         clima_actual["weather_code"]
     )
 
+    resultado_seguridad = aplicar_regla_seguridad(
+    clima_actual["wind_speed_10m"],
+    recomendaciones
+    )       
+
     return {
         "ciudad": "Bogotá",
         "temperatura": clima_actual["temperature_2m"],
         "codigo_clima": clima_actual["weather_code"],
         "velocidad_viento": clima_actual["wind_speed_10m"],
-        "recomendaciones": recomendaciones
+        "alerta_seguridad": resultado_seguridad["alerta_seguridad"],
+        "mensaje": resultado_seguridad["mensaje"],
+        "recomendaciones": resultado_seguridad["recomendaciones"]
     }
